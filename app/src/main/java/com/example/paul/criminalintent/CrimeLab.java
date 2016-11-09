@@ -53,6 +53,9 @@ public class CrimeLab {
     }
     public void removeCrime(Crime c){
         //mCrimes.remove(c);
+        String name = c.getId().toString();
+        //CrimeCursorWrapper cursor = queryCrimes();
+        mDatabase.delete(CrimeTable.NAME, CrimeTable.Cols.UUID + " = ?", new String[]{name});
     }
     public List<Crime> getCrimes(){
         List<Crime> crimes = new ArrayList<>();
@@ -77,7 +80,19 @@ public class CrimeLab {
                 return crime;
             }
         }*/
-        return null;
+        CrimeCursorWrapper cursor = queryCrimes(CrimeTable.Cols.UUID + " = ?",
+                new String[]{id.toString()}
+        );
+
+        try {
+            if (cursor.getCount() == 0) {
+                return null;
+            }
+            cursor.moveToFirst();
+            return cursor.getCrime();
+        } finally {
+            cursor.close();
+        }
     }
 
     public void updateCrime(Crime crime){
